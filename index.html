@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0E0D12">
+<title>4ЦВЕТА — каталог и заявка</title>
+<link rel="icon" href="img/favicon-180.png">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,400..800;1,75..100,400..800&display=swap">
+<style>
+:root{
+  --c:#00AEEF;--m:#EC008C;--y:#FFE000;
+  --bg:#0E0D12;--paper:#17161D;--raise:#22212B;--fg:#F5F3F8;--muted:#ABA7B6;--line:#2C2A36;
+  --grad:linear-gradient(110deg,var(--c) 0%,var(--m) 33%,var(--y) 66%,var(--c) 100%);
+  --font:"Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+img{max-width:100%;display:block}
+.app{max-width:560px;margin:0 auto;padding:0 16px calc(120px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{margin:0;line-height:1.08}
+.cond{font-stretch:75%;font-weight:800;text-transform:uppercase}
+p{margin:0}
+@keyframes sweep{from{background-position:0% 50%}to{background-position:200% 50%}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.screen{animation:rise .35s ease both}
+.screen[hidden]{display:none}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.logo{display:flex;align-items:center;gap:3px}
+.logo .mark{position:relative;height:38px;aspect-ratio:415/366}
+.logo .mark img{position:absolute;inset:0;width:100%;height:100%}
+.logo .word{height:30px;width:auto}
+.cart-btn{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:8px 14px;border-radius:999px;border:0;background:var(--raise);color:var(--fg);font:800 14px var(--font);cursor:pointer}
+.cart-btn b{min-width:22px;height:22px;border-radius:11px;background:var(--m);color:#fff;display:grid;place-items:center;font-size:12px;padding:0 6px}
+.cart-btn[data-n="0"] b{background:var(--line);color:var(--muted)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 120px;align-items:end;gap:8px;margin:6px 0 22px;padding:20px;border-radius:22px;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
+.hero h1{font-size:34px}
+.hero h1 span{display:block;background:var(--grad);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sweep 6s linear infinite}
+.hero p{color:var(--muted);font-size:14px;margin-top:10px}
+.hero img{height:170px;width:auto;margin:-10px -12px -20px auto;filter:drop-shadow(0 12px 20px rgba(0,0,0,.6))}
+.hero::before{content:"";position:absolute;right:-40px;top:-30px;width:220px;height:80px;background:url(img/brush-magenta.webp) center/100% 100% no-repeat;opacity:.55;transform:rotate(-12deg)}
+.label{display:inline-flex;align-items:center;position:relative;padding:4px 16px 4px 12px;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#16151A;isolation:isolate;margin-bottom:12px}
+.label::before{content:"";position:absolute;inset:-4px -8px;z-index:-1;background:url(img/brush-yellow.webp) center/100% 100% no-repeat}
+.label.c::before{background-image:url(img/brush-cyan.webp)}
+
+/* catalog */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{position:relative;display:grid;gap:6px;align-content:start;min-height:118px;padding:16px 14px;border-radius:18px;border:0;background:var(--paper);box-shadow:0 0 0 1px var(--line);color:var(--fg);text-align:left;font-family:var(--font);cursor:pointer;overflow:hidden;isolation:isolate;transition:transform .2s}
+.card::before{content:"";position:absolute;inset:0;padding:2px;border-radius:inherit;background:var(--grad);background-size:200% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .25s}
+.card:active{transform:scale(.97)}
+.card:hover::before,.card:focus-visible::before{opacity:1;animation:sweep 2s linear infinite}
+.card .ic{font-size:26px;line-height:1}
+.card h3{font-size:17px;font-stretch:75%;font-weight:800;text-transform:uppercase}
+.card small{color:var(--muted);font-size:12.5px;font-weight:600}
+.card small em{font-style:normal;color:var(--y)}
+.card .in{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--m);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+
+/* service */
+.back{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--muted);font:700 14px var(--font);padding:6px 0;cursor:pointer}
+.svc-head{display:flex;align-items:center;gap:12px;margin:6px 0 16px}
+.svc-head .ic{font-size:34px}
+.svc-head h2{font-size:30px}
+.prices{margin-bottom:18px;border-radius:16px;background:var(--paper);box-shadow:0 0 0 1px var(--line);overflow:hidden}
+.prices summary{cursor:pointer;padding:14px 16px;font-weight:800;list-style:none;display:flex;justify-content:space-between}
+.prices summary::-webkit-details-marker{display:none}
+.prices summary::after{content:"＋";color:var(--muted)}
+.prices[open] summary::after{content:"－"}
+.prices table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.prices td{padding:9px 16px;border-top:1px solid var(--line);font-size:14px}
+.prices td:last-child{text-align:right;font-weight:800;white-space:nowrap}
+.q{padding:16px;border-radius:18px;background:var(--paper);box-shadow:0 0 0 1px var(--line);margin-bottom:12px;display:grid;gap:10px}
+.q[hidden]{display:none}
+.q .n{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+.q p{font-size:15px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;min-height:38px;padding:8px 14px;border-radius:999px;border:0;background:var(--raise);color:var(--fg);font:700 14px var(--font);cursor:pointer;overflow:hidden;isolation:isolate;transition:color .2s}
+.chip::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--grad);background-size:200% 100%;opacity:0;transition:opacity .25s}
+.chip.on{color:#16151A}
+.chip.on::before{opacity:1;animation:sweep 3s linear infinite}
+textarea,input{width:100%;font:500 15px var(--font);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;outline:none;resize:vertical}
+textarea{min-height:48px}
+textarea:focus,input:focus{border-color:var(--c)}
+.field{display:grid;gap:6px;margin-bottom:12px}
+.field label{font-size:13px;font-weight:700;color:var(--muted)}
+
+/* buttons */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 70%,transparent)}
+.bar .in{max-width:528px;margin:0 auto;display:grid;gap:8px}
+.btn{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;border-radius:16px;border:0;font:800 16px var(--font);text-transform:uppercase;letter-spacing:.03em;color:#fff;background:var(--m);cursor:pointer;overflow:hidden;isolation:isolate}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--grad);background-size:200% 100%;opacity:0;transition:opacity .3s}
+.btn:hover::before,.btn:active::before{opacity:1;animation:sweep 1.6s linear infinite}
+.btn:hover,.btn:active{color:#16151A}
+.btn.ghost{background:var(--raise);color:var(--fg)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* cart */
+.item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px;border-radius:16px;background:var(--paper);box-shadow:0 0 0 1px var(--line);margin-bottom:10px}
+.item .ic{font-size:24px}
+.item h3{font-size:16px;font-stretch:75%;font-weight:800;text-transform:uppercase}
+.item p{color:var(--muted);font-size:13px;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.icon-btn{border:0;background:var(--raise);color:var(--fg);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:15px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.err{color:#ff6b9e;font-weight:700;font-size:14px;min-height:20px}
+.note{color:var(--muted);font-size:13px}
+
+/* success */
+.done{text-align:center;padding-top:20px;display:grid;justify-items:center;gap:14px}
+.done img{height:260px;width:auto;filter:drop-shadow(0 20px 30px rgba(0,0,0,.6))}
+.done h2{font-size:40px}
+.done .num{font-size:22px;font-weight:800;background:var(--grad);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sweep 5s linear infinite}
+.done p{color:var(--muted);max-width:36ch}
+@media (max-width:360px){.hero{grid-template-columns:minmax(0,1fr) 90px}.hero img{height:140px}.hero h1{font-size:30px}}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo" aria-label="4ЦВЕТА"><span class="mark"><img src="img/logo-splash.webp" alt=""><img src="img/logo-horse.webp" alt=""></span><img class="word" src="img/logo-word.webp" alt="4ЦВЕТА"></div>
+    <button class="cart-btn" id="cartBtn" data-n="0" type="button">Заявка <b id="cartN">0</b></button>
+  </header>
+
+  <!-- каталог -->
+  <section class="screen" id="sHome">
+    <div class="hero">
+      <div>
+        <h1 class="cond">Каталог<span>и заявка</span></h1>
+        <p>Выберите услугу, ответьте на пару вопросов и отправьте заявку менеджеру.</p>
+      </div>
+      <img src="img/mascot-welcome.webp" alt="">
+    </div>
+    <span class="label">Услуги</span>
+    <div class="grid" id="grid"></div>
+    <p class="note" style="margin-top:16px">Удобнее голосом? Закройте окно и напишите или наговорите задачу прямо в чат бота.</p>
+  </section>
+
+  <!-- услуга -->
+  <section class="screen" id="sSvc" hidden>
+    <button class="back" type="button" data-go="home">← Все услуги</button>
+    <div class="svc-head"><span class="ic" id="svcIc"></span><h2 class="cond" id="svcTitle"></h2></div>
+    <div id="svcPrices"></div>
+    <div id="svcProducts"></div>
+    <div id="svcQs"></div>
+    <div class="q">
+      <span class="n">Дополнительно</span>
+      <p>Есть ещё пожелания или вопросы к менеджеру?</p>
+      <textarea id="svcComment" rows="2" placeholder="Необязательно"></textarea>
+      <p class="note">Макеты, логотип и фото можно прислать в чат бота после отправки заявки или на fourcolors@mail.ru.</p>
+    </div>
+  </section>
+
+  <!-- корзина -->
+  <section class="screen" id="sCart" hidden>
+    <button class="back" type="button" data-go="home">← Каталог</button>
+    <span class="label c" style="margin-top:8px">Ваша заявка</span>
+    <div id="items"></div>
+    <button class="btn ghost" type="button" data-go="home" style="margin-bottom:22px">＋ Добавить услугу</button>
+    <span class="label">Контакты</span>
+    <div class="field"><label for="cName">Как к вам обращаться</label><input id="cName" autocomplete="name" placeholder="Имя"></div>
+    <div class="field"><label for="cPhone">Телефон</label><input id="cPhone" type="tel" autocomplete="tel" placeholder="+7 978 000-00-00"></div>
+    <div class="field"><label for="cEmail">Почта (необязательно)</label><input id="cEmail" type="email" autocomplete="email" placeholder="mail@example.ru"></div>
+    <p class="err" id="err"></p>
+  </section>
+
+  <!-- готово -->
+  <section class="screen" id="sDone" hidden>
+    <div class="done">
+      <img src="img/mascot-hero.webp" alt="">
+      <h2 class="cond">Заявка принята!</h2>
+      <div class="num" id="doneNum"></div>
+      <p>Менеджер свяжется с вами в ближайшее время. Подробности заявки уже в чате бота.</p>
+    </div>
+  </section>
+</div>
+
+<div class="bar"><div class="in" id="bar"></div></div>
+
+<script>
+(function(){
+  var API = 'https://jubilant-mindfulness-production-4d3c794b.up.railway.app';
+  var tg = window.Telegram && window.Telegram.WebApp;
+  var initData = tg && tg.initData || '';
+  if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#0E0D12'); tg.setBackgroundColor('#0E0D12'); } catch(e){} }
+  function haptic(t){ try{ tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(t||'light'); }catch(e){} }
+
+  var FROM = {
+    'Визитки':'от <em>750 ₽</em> / 100 шт.', 'Цифровая печать':'листовки от <em>1 250 ₽</em>',
+    'Офсетная печать':'1000 визиток <em>1 450 ₽</em>', 'Широкоформатная печать':'баннер от <em>850 ₽/м²</em>',
+    'Наружная реклама':'короб от <em>17 000 ₽</em>', 'Сувенирная продукция':'расчёт по тиражу',
+    'Разработка сайтов':'расчёт по задаче', 'Чат-боты':'расчёт по задаче'
+  };
+  var PRICES = {
+    'Визитки':[['100 шт.','750 ₽'],['500 шт.','4 200 ₽'],['1 000 шт.','1 450 ₽'],['2 000 шт.','1 950 ₽'],['5 000 шт.','6 800 ₽']],
+    'Офсетная печать':[['Визитки 1 000 шт.','1 450 ₽'],['Визитки 2 000 шт.','1 950 ₽'],['Визитки 5 000 шт.','6 800 ₽']],
+    'Цифровая печать':[['Листовки А6, 100 шт. (4+0)','1 250 ₽'],['Листовки А5, 100 шт. (4+0)','1 600 ₽'],['Листовки А4, 100 шт. (4+0)','3 350 ₽'],['Евро, 100 шт. (4+0)','1 350 ₽'],['SRA3, лист 4+0 / 4+4','от 50 / 80 ₽']],
+    'Широкоформатная печать':[['Ламинированный баннер','850 ₽/м²'],['Литой баннер','950 ₽/м²'],['Перфорированный баннер','950 ₽/м²'],['Блюбэк','650 ₽/м²'],['Ситилайт-постер 1,2×1,8 м','1 400 ₽'],['Холст с печатью','4 250 ₽/м²'],['Oracal с печатью','950 ₽/м²']],
+    'Наружная реклама':[['Табличка А3 / А4','350 / 550 ₽'],['Штендер 0,6×0,9 м','от 2 800 ₽'],['Световой короб','от 17 000 ₽'],['Объёмные световые буквы','от 95 ₽/см'],['Объёмные несветовые буквы','от 75 ₽/см'],['Пресс-волл 3×2 м','от 5 500 ₽']]
+  };
+  var CHIPS = {
+    layout:['Есть готовый макет','Нужен дизайн'],
+    deadline:['Срочно','В течение недели','Не срочно'],
+    card_print:['100 шт.','500 шт.','1000 шт.','Односторонние','Двусторонние'],
+    sign_type:['Световая','Несветовая','Объёмные буквы'],
+    install:['Нужен монтаж','Без монтажа'],
+    sides:['Односторонняя','Двусторонняя'],
+    paper:['Не знаю, подскажите'],
+    site_type:['Лендинг','Корпоративный сайт','Интернет-магазин','Квиз','Пока не знаю'],
+    existing_site:['Создаём с нуля','Сайт уже есть'],
+    bot_platforms:['Telegram','MAX','На сайте','VK','WhatsApp','Пока не знаю'],
+    bot_mode:['По сценарию','AI-ассистент','Пока не знаю'],
+    smm_platforms:['VK','Telegram','Instagram','YouTube','Начинаем с нуля'],
+    smm_goal:['Заявки и продажи','Записи','Узнаваемость','Рост аудитории','Личный бренд'],
+    branding:['Логотип и контакты','Частичная оклейка','Полное брендирование'],
+    old_film:['Старого оформления нет','Нужно снять старую плёнку'],
+    personal:['Одинаковые','С номером','С именем','Штрихкод / QR'],
+    materials:['Пришлю в чат','Отправлю на почту','Пока нет материалов'],
+    finish:['Нужен дизайн','Есть макет','Нужен монтаж','Без монтажа']
+  };
+  function chipsFor(st){
+    var id = st.id, f = st.fields || [];
+    if (/_finish$/.test(id) && f.indexOf('installation')>=0) return CHIPS.finish;
+    if (id==='card_print') return CHIPS.card_print;
+    if (id==='sign_type') return CHIPS.sign_type;
+    if (id==='offset_sides'||id==='digital_sides') return CHIPS.sides;
+    if (id==='paper') return CHIPS.paper;
+    if (id==='site_type') return CHIPS.site_type;
+    if (id==='existing_site') return CHIPS.existing_site;
+    if (id==='bot_platforms') return CHIPS.bot_platforms;
+    if (id==='bot_mode') return CHIPS.bot_mode;
+    if (id==='smm_platforms') return CHIPS.smm_platforms;
+    if (id==='smm_goal') return CHIPS.smm_goal;
+    if (id==='branding') return CHIPS.branding;
+    if (id==='plastic_personal') return CHIPS.personal;
+    if (f.indexOf('old_film')>=0) return CHIPS.old_film;
+    if (f.indexOf('layout_status')>=0) return CHIPS.layout;
+    if (f.indexOf('deadline')>=0) return CHIPS.deadline;
+    if (f.indexOf('installation')>=0) return CHIPS.install;
+    if (f.indexOf('materials')>=0) return CHIPS.materials;
+    return null;
+  }
+
+  var catalog = [], cart = [], cur = null;
+  try { cart = JSON.parse(localStorage.getItem('4c_cart')||'[]'); } catch(e){ cart = []; }
+  function saveCart(){ try{ localStorage.setItem('4c_cart', JSON.stringify(cart)); }catch(e){} }
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function show(name){
+    ['Home','Svc','Cart','Done'].forEach(function(n){ $('s'+n).hidden = n!==name; });
+    window.scrollTo(0,0); renderBar(name);
+    if (tg && tg.BackButton){ try{ name==='Home'||name==='Done' ? tg.BackButton.hide() : tg.BackButton.show(); }catch(e){} }
+    current = name;
+  }
+  var current = 'Home';
+  if (tg && tg.BackButton){ try{ tg.BackButton.onClick(function(){ show('Home'); renderGrid(); }); }catch(e){} }
+  document.querySelectorAll('[data-go="home"]').forEach(function(b){ b.addEventListener('click', function(){ show('Home'); renderGrid(); }); });
+  $('cartBtn').addEventListener('click', function(){ renderCart(); show('Cart'); });
+
+  function updateCartBtn(){ $('cartN').textContent = cart.length; $('cartBtn').dataset.n = cart.length; }
+
+  function renderBar(name){
+    var bar = $('bar'); bar.innerHTML = '';
+    if (name==='Home' && cart.length){
+      bar.innerHTML = '<button class="btn" id="bGo">Перейти к заявке · '+cart.length+'</button>';
+      $('bGo').onclick = function(){ renderCart(); show('Cart'); };
+    } else if (name==='Svc'){
+      bar.innerHTML = '<button class="btn" id="bAdd">'+(cur && cur.editIndex!=null ? 'Сохранить изменения' : 'Добавить в заявку')+'</button>';
+      $('bAdd').onclick = addToCart;
+    } else if (name==='Cart'){
+      bar.innerHTML = '<button class="btn" id="bSend"'+(cart.length?'':' disabled')+'>Отправить заявку</button>';
+      $('bSend').onclick = submit;
+    } else if (name==='Done'){
+      bar.innerHTML = '<button class="btn ghost" id="bClose">Вернуться в чат</button>';
+      $('bClose').onclick = function(){ if (tg) tg.close(); else { show('Home'); } };
+    }
+  }
+
+  function renderGrid(){
+    $('grid').innerHTML = catalog.map(function(s,i){
+      var n = cart.filter(function(c){ return c.key===s.key; }).length;
+      return '<button class="card" type="button" data-i="'+i+'">'+(n?'<span class="in">'+n+'</span>':'')+
+        '<span class="ic">'+s.icon+'</span><h3>'+esc(s.key)+'</h3><small>'+(FROM[s.key]||'расчёт по задаче')+'</small></button>';
+    }).join('');
+    $('grid').querySelectorAll('.card').forEach(function(b){ b.onclick = function(){ haptic(); openSvc(catalog[+b.dataset.i]); }; });
+    updateCartBtn(); if (current==='Home') renderBar('Home');
+  }
+
+  function openSvc(svc, editIndex, product){
+    var prev = editIndex!=null ? cart[editIndex] : null;
+    var prod = product || (prev ? prev.product : (svc.variants[0].product||null));
+    var keep = prev && prev.product===prod;
+    cur = {svc:svc, product: prod, answers: keep ? Object.assign({},prev.answers) : {}, editIndex: editIndex};
+    $('svcIc').textContent = svc.icon; $('svcTitle').textContent = svc.key;
+    var pr = PRICES[svc.key];
+    $('svcPrices').innerHTML = pr ? '<details class="prices"><summary>Цены</summary><table>'+pr.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';}).join('')+'</table></details>' : '';
+    $('svcComment').value = prev ? (prev.comment||'') : '';
+    if (svc.variants.length>1){
+      $('svcProducts').innerHTML = '<div class="q"><span class="n">Что нужно</span><p>Выберите вид:</p><div class="chips">'+
+        svc.variants.map(function(v){ return '<button type="button" class="chip'+(v.product===cur.product?' on':'')+'" data-p="'+esc(v.product)+'">'+esc(v.product)+'</button>'; }).join('')+'</div></div>';
+      $('svcProducts').querySelectorAll('.chip').forEach(function(c){ c.onclick = function(){ haptic(); var cm = $('svcComment').value; openSvc(cur.svc, cur.editIndex, c.dataset.p); $('svcComment').value = cm; }; });
+    } else $('svcProducts').innerHTML = '';
+    renderQs(); show('Svc');
+  }
+  function variant(){ var v = cur.svc.variants.filter(function(v){ return v.product===cur.product; })[0]; return v || cur.svc.variants[0]; }
+  function layoutState(){
+    var t = Object.keys(cur.answers).map(function(k){ return cur.answers[k]; }).join(' ').toLowerCase();
+    if (/нужен дизайн|разработ|дизайн нужен|с нуля/.test(t)) return 'design';
+    if (/готовый макет|есть макет|макет есть|готовый дизайн/.test(t)) return 'ready';
+    return '';
+  }
+  function visible(st){
+    var L = layoutState();
+    if (st.show_if==='design') return L==='design';
+    if (st.show_if==='ready') return L==='ready';
+    if (st.show_if==='not_landing') return !/лендинг/i.test(cur.answers['site_type']||'');
+    return true;
+  }
+  function renderQs(){
+    var steps = variant().steps, k = 0;
+    $('svcQs').innerHTML = steps.map(function(st){
+      var vis = visible(st); if (vis) k++;
+      var ch = chipsFor(st), val = cur.answers[st.id]||'';
+      return '<div class="q" data-id="'+st.id+'"'+(vis?'':' hidden')+'><span class="n">Вопрос '+(vis?k:'')+'</span><p>'+esc(st.question)+'</p>'+
+        (ch ? '<div class="chips">'+ch.map(function(c){ return '<button type="button" class="chip'+(val.indexOf(c)>=0?' on':'')+'">'+esc(c)+'</button>'; }).join('')+'</div>' : '')+
+        '<textarea rows="2" placeholder="Ваш ответ">'+esc(val)+'</textarea></div>';
+    }).join('');
+    $('svcQs').querySelectorAll('.q').forEach(function(q){
+      var id = q.dataset.id, ta = q.querySelector('textarea');
+      ta.oninput = function(){ cur.answers[id] = ta.value; refreshVisibility(); };
+      q.querySelectorAll('.chip').forEach(function(c){ c.onclick = function(){
+        haptic(); var t = c.textContent, parts = ta.value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+        var i = parts.indexOf(t);
+        if (i>=0) parts.splice(i,1); else parts.push(t);
+        ta.value = parts.join(', '); c.classList.toggle('on', i<0); cur.answers[id] = ta.value; refreshVisibility();
+      }; });
+    });
+  }
+  function refreshVisibility(){
+    var steps = variant().steps, k = 0;
+    steps.forEach(function(st){
+      var q = $('svcQs').querySelector('[data-id="'+st.id+'"]'); if (!q) return;
+      var vis = visible(st); q.hidden = !vis; if (vis){ k++; q.querySelector('.n').textContent = 'Вопрос '+k; }
+    });
+  }
+
+  function addToCart(){
+    var answers = {}, steps = variant().steps;
+    steps.forEach(function(st){ var v = (cur.answers[st.id]||'').trim(); if (v && visible(st)) answers[st.id] = v; });
+    var comment = $('svcComment').value.trim();
+    if (!Object.keys(answers).length && !comment){
+      if (tg && tg.showAlert) tg.showAlert('Ответьте хотя бы на один вопрос или напишите задачу в поле «Дополнительно».');
+      else alert('Ответьте хотя бы на один вопрос.'); return;
+    }
+    var entry = {key:cur.svc.key, product:cur.product, answers:answers, comment:comment, icon:cur.svc.icon};
+    if (cur.editIndex!=null) cart[cur.editIndex] = entry; else cart.push(entry);
+    saveCart(); haptic('medium'); renderCart(); show('Cart');
+  }
+
+  function renderCart(){
+    updateCartBtn();
+    $('items').innerHTML = cart.length ? cart.map(function(c,i){
+      var txt = Object.keys(c.answers).map(function(k){ return c.answers[k]; }).concat(c.comment?[c.comment]:[]).join(' · ');
+      return '<div class="item"><span class="ic">'+c.icon+'</span><div><h3>'+esc(c.key)+(c.product?' · '+esc(c.product):'')+'</h3><p>'+esc(txt)+'</p></div>'+
+        '<div style="display:flex;gap:6px"><button class="icon-btn" data-e="'+i+'" aria-label="Изменить">✏️</button><button class="icon-btn" data-d="'+i+'" aria-label="Удалить">✕</button></div></div>';
+    }).join('') : '<div class="empty">Пока пусто. Выберите услугу в каталоге.</div>';
+    $('items').querySelectorAll('[data-d]').forEach(function(b){ b.onclick = function(){ cart.splice(+b.dataset.d,1); saveCart(); renderCart(); renderBar('Cart'); }; });
+    $('items').querySelectorAll('[data-e]').forEach(function(b){ b.onclick = function(){ var c = cart[+b.dataset.e]; var svc = catalog.filter(function(s){return s.key===c.key;})[0]; if (svc) openSvc(svc, +b.dataset.e); }; });
+  }
+
+  function submit(){
+    var name = $('cName').value.trim(), phone = $('cPhone').value.trim(), email = $('cEmail').value.trim();
+    $('err').textContent = '';
+    if (!name){ $('err').textContent = 'Укажите имя.'; return; }
+    if (phone.replace(/\D/g,'').length < 10){ $('err').textContent = 'Укажите телефон полностью, например +7 978 000-00-00.'; return; }
+    if (!initData){ $('err').textContent = 'Откройте каталог из бота «4ЦВЕТА» в Telegram, чтобы отправить заявку.'; return; }
+    var btn = $('bSend'); btn.disabled = true; btn.textContent = 'Отправляем…';
+    fetch(API+'/api/order', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({initData:initData, cart:cart, contact:{name:name, phone:phone, email:email}})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.ok){ cart = []; saveCart(); updateCartBtn(); $('doneNum').textContent = 'Заявка №'+d.order_number; haptic('heavy'); show('Done'); }
+        else { $('err').textContent = d.error || 'Не получилось отправить. Попробуйте ещё раз.'; btn.disabled = false; btn.textContent = 'Отправить заявку'; }
+      })
+      .catch(function(){ $('err').textContent = 'Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.'; btn.disabled = false; btn.textContent = 'Отправить заявку'; });
+  }
+
+  function loadMe(){
+    if (!initData) return;
+    fetch(API+'/api/me', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({initData:initData})})
+      .then(function(r){ return r.json(); }).then(function(d){
+        if (d.ok && d.contact){ if (!$('cName').value) $('cName').value = d.contact.name||''; if (!$('cPhone').value) $('cPhone').value = d.contact.phone||''; if (!$('cEmail').value) $('cEmail').value = d.contact.email||''; }
+      }).catch(function(){});
+  }
+
+  $('grid').innerHTML = '<div class="empty" style="grid-column:1/-1">Загружаем каталог…</div>';
+  fetch(API+'/api/catalog').then(function(r){ return r.json(); }).then(function(d){
+    catalog = d.catalog || []; renderGrid(); renderBar('Home');
+  }).catch(function(){
+    $('grid').innerHTML = '<div class="empty" style="grid-column:1/-1">Не удалось загрузить каталог. Проверьте интернет и откройте окно ещё раз.</div>';
+  });
+  loadMe(); updateCartBtn();
+})();
+</script>
+</body>
+</html>

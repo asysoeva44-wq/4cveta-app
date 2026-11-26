@@ -177,7 +177,7 @@ textarea:focus,input:focus{border-color:var(--c)}
       <img src="img/mascot-hero.webp" alt="">
       <h2 class="cond">Заявка принята!</h2>
       <div class="num" id="doneNum"></div>
-      <p>Менеджер свяжется с вами в ближайшее время. Подробности заявки уже в чате бота.</p>
+      <p>Через несколько секунд в чат с ботом придёт карточка с номером и деталями заявки. Менеджер свяжется с вами в ближайшее время.</p>
     </div>
   </section>
 </div>
@@ -387,7 +387,7 @@ textarea:focus,input:focus{border-color:var(--c)}
       body: JSON.stringify({initData:initData, cart:cart, contact:{name:name, phone:phone, email:email}})})
       .then(function(r){ return r.json(); })
       .then(function(d){
-        if (d.ok){ cart = []; saveCart(); updateCartBtn(); $('doneNum').textContent = 'Заявка №'+d.order_number; haptic('heavy'); show('Done'); }
+        if (d.ok){ cart = []; saveCart(); updateCartBtn(); $('doneNum').textContent = d.order_number ? 'Заявка №'+d.order_number : 'Номер придёт в чат'; haptic('heavy'); show('Done'); }
         else { $('err').textContent = d.error || 'Не получилось отправить. Попробуйте ещё раз.'; btn.disabled = false; btn.textContent = 'Отправить заявку'; }
       })
       .catch(function(){ $('err').textContent = 'Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.'; btn.disabled = false; btn.textContent = 'Отправить заявку'; });
